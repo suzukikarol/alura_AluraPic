@@ -6,6 +6,7 @@ import { NewUser } from './new-user';
 import { SignUpService } from './signup.service';
 import { Router } from '@angular/router';
 import { PlatformDetectorService } from '../../core/plataform-detector/platform-detector.service';
+import { userNamePassword } from './username-password.validator';
 
 @Component({
     templateUrl: './signup.component.html',
@@ -54,20 +55,25 @@ export class SignUpComponent implements OnInit {
                     Validators.maxLength(14)
                 ]
             ]
-        });
+        }, {
+            validator: userNamePassword
+        }
+        );
 
         this.platformDetectorService.isPlatformBrowser() &&
             this.emailInput.nativeElement.focus();
     }
 
     signup() {
-        const newUser = this.signupForm.getRawValue() as NewUser;
-        //usando o getRawValue devevolve um obj js com os valores do formulário
-        this.signUpService
-            .signup(newUser)
-            .subscribe(
-                () => this.router.navigate(['']),
-                err => console.log(err)
-            );
+        //assim trago a validação do formulário para dentro do component
+        if (this.signupForm.invalid && !this.signupForm.pending) {
+            const newUser = this.signupForm.getRawValue() as NewUser;
+            this.signUpService
+                .signup(newUser)
+                .subscribe(
+                    () => this.router.navigate(['']),
+                    err => console.log(err)
+                );
+        }
     }
 }
