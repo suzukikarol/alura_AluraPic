@@ -12,7 +12,7 @@ import { UserService } from "../../core/user/user.service";
 @Component({
     templateUrl: './photo-details.component.html'
 })
-export class PhotoDetailsComponent implements OnInit { 
+export class PhotoDetailsComponent implements OnInit {
 
     photo$: Observable<Photo>;
     photoId: number;
@@ -23,12 +23,12 @@ export class PhotoDetailsComponent implements OnInit {
         private router: Router,
         private alertService: AlertService,
         private userService: UserService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.photoId = this.route.snapshot.params.photoId;
         this.photo$ = this.photoService.findById(this.photoId);
-        this.photo$.subscribe(() => {}, err => {
+        this.photo$.subscribe(() => { }, err => {
             console.log(err);
             this.router.navigate(['not-found']);
         });
@@ -40,7 +40,8 @@ export class PhotoDetailsComponent implements OnInit {
             .subscribe(
                 () => {
                     this.alertService.success("Photo removed", true);
-                    this.router.navigate(['/user', this.userService.getUserName()]);
+                    this.router.navigate(['/user', this.userService.getUserName()], { replaceUrl: true });
+                    //adicionando o replaceURL, ele passa a destruir do histórico de navegação, a rota da foto deletada
                 },
                 err => {
                     console.log(err);
@@ -52,7 +53,7 @@ export class PhotoDetailsComponent implements OnInit {
         this.photoService
             .like(photo.id)
             .subscribe(liked => {
-                if(liked) {
+                if (liked) {
                     this.photo$ = this.photoService.findById(photo.id);
                 }
             });
